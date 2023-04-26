@@ -4,7 +4,7 @@
       <button
         type="button"
         class="w3-button w3-round w3-blue-gray"
-        v-on:click="fnWrite"
+        @click="fnWrite"
       >
         등록
       </button>
@@ -18,7 +18,19 @@
           <th>등록일</th>
         </tr>
       </thead>
+      <!-- 게시판 내용 가져오기 -->
       <tbody>
+        <tr v-for="(row, idx) in list" :key="idx">
+          <td>{{ row.idx }}</td>
+          <td>
+            <a @click="fnView(`${row.idx}`)">{{ row.title }}</a>
+          </td>
+          <td>{{ row.author }}</td>
+          <td>{{ row.created_at }}</td>
+        </tr>
+      </tbody>
+
+      <!-- <tbody>
         <tr v-for="(row, idx) in list" :key="idx">
           <td>{{ row.idx }}</td>
           <td>
@@ -27,8 +39,9 @@
           <td>{{ row.author }}</td>
           <td>{{ row.created_at }}</td>
         </tr>
-      </tbody>
+      </tbody> -->
     </table>
+    <!-- 페이지네이션 시작 -->
     <div
       class="pagination w3-bar w3-padding-16 w3-small"
       v-if="paging.total_list_cnt > 0"
@@ -78,18 +91,19 @@
         >
       </span>
     </div>
+    <!-- 페이지네이션 끝 -->
   </div>
 </template>
 
 <script>
 export default {
-  name: "borderList",
+  name: "BoardList",
   data() {
     //변수생성
     return {
-      requestBody: {}, //리스트 페이지 데이터전송
-      list: {}, //리스트 데이터
-      no: "", //게시판 숫자처리
+      requestBody: {}, // 리스트 페이지 데이터전송
+      list: {}, // 게시판 데이터
+      no: "", // 게시판 숫자처리
       paging: {
         block: 0,
         end_page: 0,
@@ -120,6 +134,7 @@ export default {
     this.fnGetList();
   },
   methods: {
+    // 게시글 불러오기
     fnGetList() {
       this.requestBody = {
         // 데이터전송
@@ -141,6 +156,27 @@ export default {
           }
         });
     },
+    fnView(idx) {
+      this.requestBody.idx = idx;
+      this.$router.push({
+        path: "./detail",
+        query: this.requestBody,
+      });
+    },
+    fnWrite() {
+      this.$router.push({
+        path: "./write",
+      });
+    },
+    fnPage(n) {
+      if (this.page !== n) {
+        this.page = n;
+        this.fnGetList();
+      }
+    },
+    // 게시글 상세보기
+    // fnView(idx) {},
+
     // fnGetList() {
     //   this.list = [
     //     {
