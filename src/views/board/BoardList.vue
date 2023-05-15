@@ -20,7 +20,7 @@
       </thead>
       <!-- 게시판 내용 가져오기 -->
       <tbody>
-        <tr v-for="(row, idx) in list" :key="idx">
+        <tr v-for="(row, idx) in list.data" :key="idx">
           <td>{{ row.idx }}</td>
           <td>
             <a @click="fnView(`${row.idx}`)">{{ row.title }}</a>
@@ -124,9 +124,8 @@ export default {
         let pageNumber = [];
         let start_page = this.paging.start_page;
         let end_page = this.paging.end_page;
-        for (let i = start_page; i <= end_page; i++) {
-          return pageNumber;
-        }
+        for (let i = start_page; i <= end_page; i++) pageNumber.push(i);
+        return pageNumber;
       },
     };
   },
@@ -149,6 +148,10 @@ export default {
         })
         .then((res) => {
           this.list = res.data; //서버에서 데이터를 목록으로 보내므로 바로 할당하여 사용할 수 있다.
+          this.paging = res.data.pagination;
+          this.no =
+            this.paging.total_list_cnt -
+            (this.paging.page - 1) * this.paging.page_size;
         })
         .catch((err) => {
           if (err.message.indexIf("Network Error") > -1) {
